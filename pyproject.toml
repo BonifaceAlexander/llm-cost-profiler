@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-cost-profiler"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tiny Python library for tracking LLM token usage, latency, and estimated cost."
 readme = "README.md"
 requires-python = ">=3.8"
