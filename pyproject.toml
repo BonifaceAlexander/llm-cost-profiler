@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-cost-profiler"
+version = "0.1.0"
+description = "A tiny Python library for tracking LLM token usage, latency, and estimated cost."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  {name = "Boniface Alexander", email = "you@example.com"}
+]
+license = {text = "MIT"}
+keywords = ["llm","cost","profiler","openai","langchain"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "build", "twine"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
