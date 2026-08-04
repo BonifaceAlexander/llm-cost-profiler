@@ -12,7 +12,7 @@ def token_getter(response):
     usage = response.get("usage", {})
     return (usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0))
 
-@profile_llm_call(prof, model_getter=model_getter, token_getter=token_getter)
+@profile_llm_call(prof, model_key_getter=model_getter, token_counts_getter=token_getter)
 def fake_llm(prompt, model="gpt-3.5-turbo"):
     # Simulate latency and usage returned by a real LLM client
     time.sleep(0.1)

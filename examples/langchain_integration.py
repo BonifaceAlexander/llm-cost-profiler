@@ -1,7 +1,11 @@
 # examples/langchain_integration.py
 # Demonstrates decorator approach with LangChain
+#
+# Note: ChatOpenAI now lives in the separate `langchain-openai` package
+# (pip install langchain-openai) - it moved out of `langchain.chat_models`
+# in recent LangChain versions.
 from llm_cost_profiler import CostProfiler, profile_llm_call
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 prof = CostProfiler("examples_langchain_costs.jsonl")
 
@@ -18,7 +22,7 @@ def token_getter(response):
     except Exception:
         return (0,0)
 
-@profile_llm_call(prof, model_getter=model_getter, token_getter=token_getter)
+@profile_llm_call(prof, model_key_getter=model_getter, token_counts_getter=token_getter)
 def chain_call(prompt, model="gpt-4o"):
     llm = ChatOpenAI(model_name=model)
     return llm.generate([{"role":"user","content":prompt}])

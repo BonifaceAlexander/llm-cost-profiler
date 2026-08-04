@@ -20,7 +20,7 @@ def token_getter(response):
         usage = getattr(response, "usage", {})
         return (getattr(usage, "prompt_tokens", 0), getattr(usage, "completion_tokens", 0))
 
-@profile_llm_call(prof, model_getter=model_getter, token_getter=token_getter)
+@profile_llm_call(prof, model_key_getter=model_getter, token_counts_getter=token_getter)
 def call_llm(prompt, model="gpt-3.5-turbo"):
     return client.ChatCompletion.create(model=model, messages=[{"role":"user","content":prompt}])
 

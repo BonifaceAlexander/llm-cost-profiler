@@ -8,7 +8,7 @@ prof = CostProfiler("examples_batch_costs.jsonl")
 def model_getter(a,k): return "gpt-3.5-turbo"
 def token_getter(response): return (response["usage"].get("prompt_tokens",0), response["usage"].get("completion_tokens",0))
 
-@profile_llm_call(prof, model_getter=model_getter, token_getter=token_getter)
+@profile_llm_call(prof, model_key_getter=model_getter, token_counts_getter=token_getter)
 def fake_summary(doc):
     time.sleep(0.05)
     words = len(doc.split())
