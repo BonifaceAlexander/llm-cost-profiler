@@ -37,8 +37,19 @@ def main():
 
     dashboard_path = os.path.join(os.path.dirname(__file__), "dashboard.py")
 
-    # Streamlit-level flags go BEFORE the `--` separator.
-    streamlit_flags = []
+    # Streamlit-level flags go BEFORE the `--` separator. We set a
+    # dark theme by default (matching this project's visual identity)
+    # via real theme flags - not just CSS - since CSS alone can't
+    # reach Streamlit's native chrome (the dataframe widget, inputs,
+    # the "Deploy" menu, etc).
+    streamlit_flags = [
+        "--theme.base", "dark",
+        "--theme.backgroundColor", "#08090b",
+        "--theme.secondaryBackgroundColor", "#12141a",
+        "--theme.textColor", "#e8e9ec",
+        "--theme.primaryColor", "#5b8def",
+        "--theme.borderColor", "#23262e",
+    ]
     if args.port is not None:
         streamlit_flags += ["--server.port", str(args.port)]
     if args.headless:

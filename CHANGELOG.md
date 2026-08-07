@@ -24,7 +24,15 @@ This project follows [Semantic Versioning](https://semver.org/).
   tokens, cost by step, cost by model, cumulative cost over time,
   average latency by step, and a budget-exceeded warning banner
   (`--budget`). Also supports `--port` and `--headless`.
-  New optional dependency group: `pip install llm-cost-profiler[dashboard]`.
+  Redesigned with a native dark theme (via `--theme.*` flags),
+  Plotly charts (horizontal bar for cost/latency by step, donut for
+  cost by model, gradient-filled area for cumulative cost), custom
+  metric cards, a live budget status bar, and an auto-generated
+  insight callout naming the single largest cost driver by name and
+  % of spend - the "which step is costing me money" answer surfaced
+  directly, not just charted.
+  New optional dependency group: `pip install llm-cost-profiler[dashboard]`
+  (now includes `plotly`).
   New modules: `llm_cost_profiler.dashboard`, `llm_cost_profiler.cli`.
   New console script: `llm-cost-profiler`.
   New `[all]` extra installing every optional dependency group.
@@ -111,6 +119,18 @@ This project follows [Semantic Versioning](https://semver.org/).
   `parse_known_args` so the script remains safe to exec in-process
   under `AppTest` too, where `sys.argv` belongs to the outer test
   runner, not this app.
+- Plotly's `Scatter(fillcolor=...)` does not accept CSS-style 8-digit
+  hex-with-alpha (`#5b8def22`) the way CSS does - it raised
+  `ValueError` on every real render of the cumulative-cost chart, only
+  caught because `AppTest` was re-run against the visual redesign
+  before shipping it. Fixed with a proper `rgba(...)` conversion.
+- The cost-by-step chart's top (widest) bar had its value label
+  clipped by the container edge (e.g. "$5.5632" rendered as "$5.") in
+  the dashboard's narrower two-column layout - only visible in an
+  actual rendered screenshot, not in `AppTest`'s DOM inspection, which
+  doesn't do layout. Fixed with `cliponaxis=False`, wider right
+  margin, and extra x-axis headroom; applied the same fix
+  proactively to the latency chart, which uses the same pattern.
 
 ### Testing
 - `test_profiler.py` and `test_price_fetcher.py` were placeholder

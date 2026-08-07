@@ -26,8 +26,8 @@ llm-cost-profiler = "llm_cost_profiler.cli:main"
 dev = ["pytest", "ruff", "build", "twine"]
 langgraph = ["langgraph", "langchain-core"]
 litellm = ["litellm"]
-dashboard = ["streamlit", "pandas"]
-all = ["langgraph", "langchain-core", "litellm", "streamlit", "pandas"]
+dashboard = ["streamlit", "pandas", "plotly"]
+all = ["langgraph", "langchain-core", "litellm", "streamlit", "pandas", "plotly"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
