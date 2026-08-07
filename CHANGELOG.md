@@ -92,8 +92,25 @@ This project follows [Semantic Versioning](https://semver.org/).
   (they'd silently break the page instead, since they'd hit our own
   script's argparse as unrecognized arguments). Rewritten so
   streamlit-level flags are placed before `--` and app-level flags
-  (`--sink`, `--budget`) after it; verified against a real subprocess
-  launch, not just unit tests.
+  (`--sink`, `--budget`) after it.
+- **`dashboard.py` never actually received `--sink`/`--budget` in a
+  real `streamlit run` process.** It searched `sys.argv` for a `--`
+  separator to find its own args, but Streamlit strips both its own
+  flags *and* the `--` separator before handing off to the script -
+  so the search always failed and the dashboard silently fell back to
+  default values every time, regardless of what was passed on the
+  command line. This was caught by launching the actual CLI as a real
+  subprocess and rendering it in a real browser (Playwright), which
+  showed "Reading from llm_costs.jsonl" instead of the file that was
+  explicitly passed. All prior `AppTest`-based dashboard tests still
+  passed throughout, since `AppTest` runs the script in-process and
+  those tests control input via environment variables, never touching
+  the real `sys.argv` code path - a real gap in test coverage, now
+  closed (see Testing, below). Fixed by using `sys.argv[1:]` directly
+  (Streamlit already strips everything it needs to) with
+  `parse_known_args` so the script remains safe to exec in-process
+  under `AppTest` too, where `sys.argv` belongs to the outer test
+  runner, not this app.
 
 ### Testing
 - `test_profiler.py` and `test_price_fetcher.py` were placeholder
@@ -116,7 +133,14 @@ This project follows [Semantic Versioning](https://semver.org/).
   - `tests/test_dashboard.py` — headless dashboard tests via
     Streamlit's official `AppTest` API: empty state, real data
     rendering, budget banner, corrupt-line handling, old-format logs.
-  - 30 tests total, up from 2 placeholders.
+  - `tests/test_cli_subprocess.py` — real subprocess + real headless
+    browser (Playwright) tests for the `llm-cost-profiler dashboard`
+    CLI, marked `slow`. Added specifically because `AppTest`-based
+    tests run in-process and cannot exercise the actual `sys.argv`
+    path a real `streamlit run` invocation goes through - this is
+    what caught the `--sink`/`--port` bug documented above, and
+    exists to keep that class of bug from silently reappearing.
+  - 32 tests total, up from 2 placeholders.
 
 ### Compatibility
 - `report_summary()` and the existing `profile_llm_call` /

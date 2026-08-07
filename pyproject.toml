@@ -31,3 +31,8 @@ all = ["langgraph", "langchain-core", "litellm", "streamlit", "pandas"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+  "slow: real subprocess/browser tests (streamlit + playwright) - slower, run in CI or before release",
+]

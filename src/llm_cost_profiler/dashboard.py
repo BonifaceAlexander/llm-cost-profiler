@@ -18,23 +18,26 @@ import streamlit as st
 
 
 def _parse_args():
-    # Streamlit passes its own args through sys.argv; anything after
-    # `--` on the command line is what we actually want to parse.
-    # We also support env vars as a fallback, both for `streamlit run`
-    # invocations that don't cleanly pass args through in some
-    # environments, and so the dashboard is testable headlessly via
-    # streamlit.testing.v1.AppTest (which doesn't give us a clean way
-    # to inject argv).
-    if "--" in sys.argv:
-        argv = sys.argv[sys.argv.index("--") + 1:]
-    else:
-        argv = []
+    # Streamlit strips its own flags AND the `--` separator before
+    # handing off to the script - sys.argv[1:] here is already just
+    # our app-level args (e.g. ['--sink', 'x.jsonl']) in a real
+    # `streamlit run` subprocess. (Verified by direct inspection.)
+    #
+    # Under streamlit.testing.v1.AppTest, though, the script runs
+    # in-process, so sys.argv is whatever the *outer* process (e.g.
+    # pytest) was invoked with - completely unrelated to this app and
+    # not safe to parse strictly. We use parse_known_args() so any
+    # unrecognized argv (pytest's own flags, test paths, etc.) is
+    # ignored instead of raising, and rely on the env var defaults
+    # below in that case.
+    argv = sys.argv[1:]
     parser = argparse.ArgumentParser()
     parser.add_argument("--sink", default=os.environ.get("LLM_COST_PROFILER_SINK", "llm_costs.jsonl"))
     parser.add_argument("--budget", type=float,
                          default=_env_float("LLM_COST_PROFILER_BUDGET"),
                          help="Optional total budget in USD; a banner shows if exceeded")
-    return parser.parse_args(argv)
+    args, _unknown = parser.parse_known_args(argv)
+    return args
 
 
 def _env_float(name):
