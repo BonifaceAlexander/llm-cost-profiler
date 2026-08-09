@@ -17,7 +17,7 @@ def load_cache():
         if time.time() - obj.get("_fetched_at", 0) > CACHE_TTL:
             return {}
         return obj.get("pricing", {})
-    except:
+    except Exception:
         return {}
 
 def save_cache(p):
@@ -30,7 +30,7 @@ def fetch_openai_pricing() -> Optional[Dict]:
         r = requests.get("https://openai.com/pricing", timeout=8)
         if r.status_code != 200: return None
         return None
-    except:
+    except Exception:
         return None
 
 def fetch_gemini_pricing() -> Optional[Dict]:
@@ -50,7 +50,7 @@ def get_dynamic_pricing():
         try:
             v = fn()
             if v: agg.update(v)
-        except:
+        except Exception:
             pass
     if agg: save_cache(agg)
     return agg

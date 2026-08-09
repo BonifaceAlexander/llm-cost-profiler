@@ -1,7 +1,7 @@
 try:
     from langchain.callbacks.base import BaseCallbackHandler
     HAS_LC = True
-except:
+except Exception:
     HAS_LC = False
 
 class LangChainCallback:
