@@ -100,7 +100,12 @@ def inject_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
-    html, body, [class*="css"] {{
+    /* Streamlit's generated wrapper classes have changed naming scheme
+       across versions (old: "css-xxxxx", current: "st-emotion-cache-xxxxx")
+       and re-apply Streamlit's own default font on elements close to our
+       injected HTML, overriding plain inheritance from html/body. A
+       universal selector can't go stale the way a class-substring one did. */
+    * {{
         font-family: 'IBM Plex Mono', ui-monospace, monospace !important;
     }}
 
@@ -113,10 +118,15 @@ def inject_css():
     #MainMenu, footer {{visibility: hidden;}}
 
     /* ---- header ---- */
+    /* font-size floor: below ~18px, this label reliably renders with its
+       glyphs vertically clipped (top slice only) in Streamlit's flex-based
+       block layout - reproduced with every font-family/weight/letter-spacing
+       combination and independent of load timing, so it isn't a font or
+       animation issue. Verified clean at 19px+; kept at 20px for margin. */
     .lcp-eyebrow {{
-        color: {MUTED2};
-        font-size: 12px;
-        letter-spacing: .25em;
+        color: {MUTED};
+        font-size: 20px;
+        letter-spacing: .2em;
         margin-bottom: 6px;
     }}
     .lcp-title {{

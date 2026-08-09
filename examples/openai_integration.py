@@ -1,31 +1,26 @@
 # examples/openai_integration.py
-# Requires `openai` package and an OPENAI_API_KEY env var
+# Requires `openai` package (>=1.0) and an OPENAI_API_KEY env var
 from llm_cost_profiler import CostProfiler, profile_llm_call
 import os
-import openai
+from openai import OpenAI
 
-openai.api_key = os.environ.get("OPENAI_API_KEY", "")
+api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key) if api_key else None
 
 prof = CostProfiler("examples_openai_costs.jsonl")
 
 def model_getter(args, kwargs): return kwargs.get("model","gpt-3.5-turbo")
 def token_getter(response):
-    # OpenAI's Python client returns dict-like responses sometimes; support both dict and object
-    if isinstance(response, dict):
-        usage = response.get("usage", {})
-        return (usage.get("prompt_tokens",0), usage.get("completion_tokens",0))
-    else:
-        usage = getattr(response, "usage", {})
-        return (getattr(usage, "prompt_tokens", 0), getattr(usage, "completion_tokens", 0))
+    usage = response.usage
+    return (usage.prompt_tokens, usage.completion_tokens)
 
 @profile_llm_call(prof, model_key_getter=model_getter, token_counts_getter=token_getter)
 def call_openai(prompt, model="gpt-3.5-turbo"):
-    # Using ChatCompletion example (adjust to your client version)
-    resp = openai.ChatCompletion.create(model=model, messages=[{"role":"user","content":prompt}])
+    resp = client.chat.completions.create(model=model, messages=[{"role":"user","content":prompt}])
     return resp
 
 if __name__ == "__main__":
-    if not openai.api_key:
+    if client is None:
         print("Set OPENAI_API_KEY to run this example.")
     else:
         r = call_openai("Summarize the benefits of llm-cost-profiler in one sentence.")
