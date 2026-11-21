@@ -9,7 +9,7 @@ description = "A tiny Python library for tracking LLM token usage, latency, and 
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-  {name = "Boniface Alexander", email = "you@example.com"}
+  {name = "Boniface Alexander", email = "bonnybon7@@gmail..com"}
 ]
 license = {text = "MIT"}
 keywords = ["llm","cost","profiler","openai","langchain","langgraph","litellm","dashboard"]
